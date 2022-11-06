@@ -1,0 +1,21 @@
+Bootstrap: library
+From: ubuntu:22.04
+Stage: build
+
+%post
+    # use tmpfs (to avoid saving ubuntu's packages)
+    mount -t tmpfs -o exec,size=8G tmpfs /tmp
+    mount -t tmpfs -o exec,size=8G tmpfs /var/cache/apt/archives
+
+    apt-get update && apt-get -y upgrade
+
+    apt install -y python3 python3-pip git wget ffmpeg
+    python3 -m pip install librosa torch torch-vision opencv-python matplotlib face_alignment facenet_pytorch mmcv h5py av
+    cd /usr/local
+    git clone --depth 1 https://github.com/twoertwein/VisualVoice.git
+    cd VisualVoice
+
+    wget http://dl.fbaipublicfiles.com/VisualVoice/av-speech-separation-model/facial_best.pth
+    wget http://dl.fbaipublicfiles.com/VisualVoice/av-speech-separation-model/lipreading_best.pth
+    wget http://dl.fbaipublicfiles.com/VisualVoice/av-speech-separation-model/unet_best.pth
+    wget http://dl.fbaipublicfiles.com/VisualVoice/av-speech-separation-model/vocal_best.pth
